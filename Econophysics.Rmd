@@ -1,0 +1,1028 @@
+---
+title: "Chapter 3 - Pareto Distribution"
+author: "Kurt Semm"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r, echo=FALSE}
+library(ipumsr)
+library(dplyr, warn.conflicts = FALSE)
+library(survey)
+library(srvyr)
+library(plyr)
+library(dineq)
+library(tidyverse)
+library(reshape)
+library(reshape2)
+library(readr)
+library(ggplot2)
+library(gridExtra)
+library(scales)
+library(knitr)
+library(kableExtra)
+library(frequency)
+library(purrr)
+library(stargazer)
+library(sf)
+library(spatstat.geom)
+library(hrbrthemes)
+library(viridis)
+
+setwd("~/Documents/Dissertation/MAX_ENT_CODE/clean_data_sw")
+# Note that you can pass in the loaded DDI into the `read_ipums_micro()`
+cps_ddi <- read_ipums_ddi("usa_00021.xml")
+cps_data <- read_ipums_micro(cps_ddi, data_file = "usa_00021.dat.gz", verbose = FALSE)
+
+
+## Clean data so water cost and income are greater than one. 
+## FARM equal to 1 means the Household is NOT a farm and we assume household  ## has complete plumbing. We leave household type alone for right now, 
+## also shower does not exist for the years we are looking at. 
+## Using constant PUMA instead of non-constant PUMA. 
+
+cps_data%>% select(-SERIAL, -PERNUM)
+cps_data <- cps_data %>%
+  #select_if(is.labelled) %>% 
+  filter(COSTWATR >= 1, 
+  HHINCOME >= 1, 
+  FARM == 1,
+  PLUMBING == 20, 
+  !is.na(COUNTYFIP), #COUNTYFIP goes back to 2005
+  RELATE == 1)
+  #filter(SINK == 2) # We lose years 2001-2008, not included in survey before than. 
+
+# Insert CPI to adjust data for Inflation. Source bls.gov
+library(readxl)
+CPI <- read_excel("CPI.xlsx")
+cpi <- CPI %>% 
+  select(YEAR, Annual)
+
+#Combine cpi with our dataset & adjust for inflation
+cps_data %>% group_by(YEAR)
+cps_usa <- cps_data %>% left_join(cpi)
+
+cps_usa <- cps_usa %>%
+  mutate(HHINCOME = (HHINCOME/Annual)*100) %>% 
+  mutate(COSTWATR = (COSTWATR/Annual)*100)
+
+# Next, we have to adjust income and water costs for number of people in household, number of rooms, number of bedrooms, 
+# Using https://www.pewresearch.org/social-trends/2011/10/03/appendix-b-adjusting-household-income-for-household-size/ as a reference. 
+
+n = 0.5
+
+#Adjust for number of individuals in household. 
+
+cps_usa <- cps_usa %>% 
+  mutate(HHINCOME = (HHINCOME/(PERNUM^n))) %>% 
+  mutate(COSTWATR = (COSTWATR/(PERNUM^n))) 
+
+#cps_usa <- cps_usa %>% 
+#mutate(HHINCOME = (HHINCOME/(ROOMS^n)))
+#mutate(COSTWATR = (COSTWATR/(ROOMS^n)))
+
+### YOU NEED TO PUT THE HOUSEHOLD WEIGHT (HHWT) INTO IT. 7/19/22 
+
+pctile <- cps_usa %>% 
+  group_by(YEAR) %>%
+  do(pc98_inc = reldist::wtd.quantile(.$HHINCOME, q = 0.98, weight = .$HHWT)) %>% 
+  mutate(pc98_inc = unlist(pc98_inc)) %>% 
+  as.data.frame()
+
+water_pctile <- cps_usa %>% group_by(YEAR) %>%
+  do(pc98_wtc = reldist::wtd.quantile(.$COSTWATR, q = 0.98, weight = .$HHWT)) %>% 
+  mutate(pc98_wtc = unlist(pc98_wtc)) %>% 
+  as.data.frame()
+
+## Join columns pctile and water_pctile. 7/20/22
+cps_usa <- cps_usa %>% 
+  left_join(pctile) %>% 
+  left_join(water_pctile)
+```
+
+```{r echo=TRUE}
+# Income Deciles for Income and Water Cost
+# 9/19 change and use wtd.quintile instead of percent_rank. 
+
+# Age Level
+cps_usa <- cps_usa %>% 
+ mutate(AGE = as.numeric(AGE)) %>%
+ mutate(AGE_GRP = case_when(
+   AGE >= 1 &  AGE <=  9 ~ "09 and Less",
+   AGE >  9 &  AGE <= 19 ~ "19 and Less",
+   AGE >  19 & AGE <= 29 ~ "29 and Less",
+   AGE >  29 & AGE <= 39 ~ "39 and Less",
+   AGE >  39 & AGE <= 49 ~ "49 and Less",
+   AGE >  49 & AGE <= 59 ~ "59 and Less",
+   AGE >  59 & AGE <= 69 ~ "69 and Less",
+   AGE >  69 & AGE <= 79 ~ "79 and Less",
+   AGE >  79 & AGE <= 89 ~ "89 and Less",
+   AGE >= 89 ~ "89 & More",
+   TRUE ~ NA_character_)) %>%
+# Education Level
+  mutate(EDUC = as_factor(EDUC),
+         year = as.factor(YEAR)) %>%
+  mutate(EDUC4 = factor(case_when(
+    EDUC %in% c("N/A or no schooling", "Nursery school to grade 4", 
+    "Grade 5, 6, 7, or 8", "Grade 9", "Grade 10", "Grade 11") 
+    ~ "A: Less that HS",
+                                  EDUC == "Grade 12" ~ "B: HS Finished",
+                                  EDUC %in% c("1 year of college", "2 years of college", "3 years of college")
+                                  ~ "C: Some College",
+                                  EDUC %in% c("4 years of college", "5+ of college") ~ "D: College Grad",
+                                  TRUE ~ NA_character_))) %>% 
+# To create our Identity variable we need to create a new column using mutate()
+# Identity by Race
+  mutate(RACE = as_factor(RACE),
+         HISPAN = as_factor(lbl_na_if(HISPAN, ~.val == 9)),
+         SEX = as_factor(SEX)) %>%
+  mutate(RACE_ETHD = case_when(
+    HISPAN %in% c("Mexican", "Puerto Rican", "Cuban", "Other") ~ "hispanic",
+    HISPAN == "Not Hispanic" & RACE == "White" ~ "white",
+    HISPAN == "Not Hispanic" & RACE == "Black/African American" ~ "black",
+    HISPAN == "Not Hispanic" & RACE == "Other Asian or Pacific Islander" ~ "asian",
+    HISPAN == "Not Hispanic" & RACE == "amer_indianor Alaska Native" ~ "american indian",
+    HISPAN == "Not Hispanic" & RACE %in% c("Other race, nec", "non-Hispanic") ~ "other")) %>%
+  mutate(RACE_ETH = factor(
+    case_when(RACE_ETHD %in% c("other") ~ "other",
+              RACE_ETHD %in% c("hispanic", "white", "black", "american indian", "asian") ~ RACE_ETHD)),
+         RACE_ETHD = factor(RACE_ETHD)) %>%
+  mutate(IDENTITY = factor(case_when(RACE_ETH == "white" & SEX == "Male" ~ "White Men",
+              RACE_ETH == "white" & SEX == "Female" ~ "White Women",
+              RACE_ETH == "black" & SEX == "Male" ~ "Black Men",
+              RACE_ETH == "black" & SEX == "Female" ~ "Black Women",
+              RACE_ETH == "hispanic" & SEX == "Male" ~ "Hispanic Men",
+              RACE_ETH == "hispanic" & SEX == "Female" ~ "Hispanic Women",
+              RACE_ETH == "american indian" & SEX ==  "Male" ~ "amer_indianMen",
+              RACE_ETH == "american indian" & SEX == "Female" ~ "amer_indianWomen",
+              RACE_ETH == "asian" & SEX == "Male" ~ "Asian Men",
+              RACE_ETH == "asian" & SEX == "Female" ~ "Asian Women",
+              RACE_ETH == "other" & SEX == "Male" ~ "Other Men",
+              RACE_ETH == "other" & SEX == "Female" ~ "Other Women",
+                                     TRUE ~ NA_character_))) %>% 
+# Number of children in Household
+  mutate(NUM_KIDS = as_factor(case_when(
+    NCHILD == 0 ~ "No children",
+    NCHILD == 1 ~ "One Child",
+    NCHILD == 2 ~ "Two children",
+    NCHILD >= 3 ~ "Three or More children",
+    TRUE ~ NA_character_)))
+
+# Show which variables have state labels
+AZ = 4
+CA = 6
+CO = 8 
+NV = 32 
+NM = 35
+UT = 49
+WY = 56
+
+# Reduce the size of our dataset to only include states protected by 
+# "The Law of the River."
+
+states <- c("4", "6", "8","32", "35", "49", "56")
+low_basin <- c("4", "6", "8")
+up_basin <- c("32", "35", "49", "56")
+cps_sw <- cps_usa %>% 
+  filter(STATEFIP %in% states )
+
+#write_dta(cps_sw, "cps_sw.dta")
+
+```
+### Recreating Econophysics of Income Distribution
+```{r}
+ for (i in 2005:2019){
+    filename<- cps_sw %>% 
+      filter(YEAR==i)
+    filename=subset(filename,select=c(HHINCOME))
+    filename=filename$HHINCOME
+    filename<-data.frame(filename)
+    
+
+  #we define the number of bins that we want, 75
+  b<-75
+  
+  #generating the bins and obtaining the upper number as lab
+  labs <- levels(cut(filename$filename, b))
+  upper<- as.numeric( sub("[^,]*,([^]]*)\\]", "\\1", labs) )
+  
+  #creating the bins within the dataframe filename
+  filename<-filename %>% 
+    mutate(new_bin = cut(filename, breaks=b, labels=upper))
+  rm(labs, upper)
+  
+  #transforming the new_bin into table and then calculating the cum frequency
+  bins<-table(filename$new_bin)
+  cumsumbins<-cumsum(bins)
+  
+  #Putting together bins and the cum frequency
+  bins<-as.data.frame(bins)
+  cumsumbins<-as.data.frame(cumsumbins)
+    bins<-data.frame(bins,cumsumbins)
+  
+  #Relative frequency 
+  bins$rf<-bins$Freq/sum(bins$Freq)
+  bins$cumbelow<-bins$cumsumbins/sum(bins$Freq)
+  bins$cumabove<-1-bins$cumbelow
+  bins$Var1<-as.numeric(as.character(bins$Var1))
+  
+  bins<-bins%>%
+    mutate(tipo=case_when(Var1 <158333  & cumbelow < 0.97 ~1,
+                          Var1 <158333  & cumbelow > 0.97 ~2,
+          ))
+  
+  
+  bins$tipo<-as.factor(bins$tipo)
+  levels(bins$tipo)<-c("Bottom 97%", "Top 3%")
+  bins$year<-i
+  
+
+  bins2<-bins%>%filter(cumabove>0 & Freq>0 & Var1<158333 & cumbelow<0.97)
+  bins2$lcumabove<-log(bins2$cumabove)
+ 
+  R<-lm(bins2$lcumabove ~ bins2$Var1  -1)
+  R<--as.numeric(1/R$coefficients)
+  
+  bins$Var2<-bins$Var1/R
+  
+  bins$var3<-assign(paste0("year", i),bins)
+  rm(filename,cumsumbins,bins,bins2)
+
+ }
+
+data<-rbind(year2005,
+            year2006,
+            year2007,
+            year2008,
+            year2009,
+            year2010,
+            year2011,
+            year2012,
+            year2013,
+            year2014,
+            year2015,
+            year2016,
+            year2017,
+            year2018,
+            year2019)
+           
+
+data$year1<-as.numeric(as.character(data$year))
+data$year<-as.factor(data$year)
+data$lcumabove<-log(data$cumabove)
+
+```
+
+## Plot
+```{r}
+data%>%filter(cumbelow<0.97) %>%
+  ggplot(aes(data, x=Var2, y=cumabove, shape=year, colour=year))+
+  geom_point()+
+ scale_shape_manual(values=1:nlevels(data$year)) +
+  scale_y_continuous(trans='log10') +
+  #scale_x_continuous(trans='log10', labels=comma)+
+    geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title="Southwest Households 2005-2019", subtitle="(log-linear)", x="Relative Income (r/R)", y="Cumulative Probability")+
+    theme_classic()
+
+minor_breaks<- seq(0, 1, 5)
+```
+## Total 
+
+```{r}
+#Figures - Total 
+total<-data%>%filter(Var1<158333)%>%
+  ggplot(aes(data, x=Var1, y=cumabove, shape=year, colour=year))+
+  geom_point(size=2)+
+  scale_shape_manual(values=1:nlevels(data$year)) +
+  scale_y_continuous(trans='log10', minor_breaks = minor_breaks) +
+  #scale_x_continuous(trans='log10', labels=comma)+
+  labs(x="Household Income in 2012 dollars", y="Cumulative Probability")+
+  geom_vline(xintercept = 100000, linetype="dotted", 
+             color = "black", size=1)+
+  scale_x_continuous(labels = comma_format(big.mark = ",",
+                                           decimal.mark = "."))+
+  theme_classic()+
+  theme(legend.title = element_blank(), panel.grid.major = element_line(size = 0.5, color="grey"), panel.grid.minor = element_line(size=0.5))
+
+total
+
+```
+
+```{r}
+#Figures 
+bottom<-data%>%filter(Var1<158333 & cumbelow<0.97)%>%
+  ggplot(aes(data, x=Var1, y=cumabove, shape=year, colour=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(data$year)) +
+  scale_y_continuous(trans='log10', minor_breaks = minor_breaks) +
+  scale_x_continuous(labels = comma_format(big.mark = ",",
+                                           decimal.mark = "."))+
+  geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title="Bottom 97%", subtitle="(log-linear)", x="Household Income in 2012 dollars", y="Cumulative Probability")+
+   theme_classic()+
+  theme(legend.position = "none")+
+  theme(legend.title = element_blank(), panel.grid.major = element_line(size = 0.5, color="grey"), panel.grid.minor = element_line(size=0.5))
+
+bottom
+```
+
+```{r}
+#Figures - To recreate plots in Noe and Anwar paper. 
+top<-data%>%filter(Var1<158333 & cumbelow>0.97)%>%
+  ggplot(aes(data, x=Var1, y=cumabove, shape=year, colour=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(data$year)) +
+  scale_y_continuous(trans='log10', minor_breaks = minor_breaks) +
+  scale_x_continuous(trans='log10', labels=comma, minor_breaks = minor_breaks)+
+  geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title="Top 3%", subtitle="(log-log)", x="Household Income in 2012 dollars", y="Cumulative Probability")+
+   theme_classic()+
+  theme(legend.position = "none") +
+  theme(legend.title = element_blank(), panel.grid.major = element_line(size = 0.5, color="grey"), panel.grid.minor = element_line(size=0.5))
+
+top
+```
+
+
+
+```{r}
+## This is the log-log graph in Noe and Anwar's 2014, and what Jacabo/Anwar start their paper from 2020.
+## 
+
+
+data%>%filter(cumbelow<0.97)%>%
+  ggplot(aes(data, x=Var2, y=cumabove, shape=year, colour=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(data$year)) +
+  scale_y_continuous(trans='log10') +
+  scale_x_continuous(trans='log10', labels=comma)+
+  geom_smooth(aes(x=Var2, y=cumabove, ymax=.1), se=FALSE, method="lm", formula= y ~ x, linetype="dotdash", inherit.aes=FALSE)+
+  labs(title="All Individuals 2005-2019", subtitle="(log-log)", x="Relative Income (r/R)", y="Cumulative Probability")+
+  theme_classic()
+```
+
+
+## By Race, Sex, and State
+
+### Total
+```{r}
+for (i in 2005:2019) {
+  filename<- cps_sw %>% 
+      filter(YEAR==i)
+    filename=subset(filename,select=c(HHINCOME, IDENTITY, STATEFIP))
+    filename$HHINCOME=as.numeric(filename$HHINCOME)
+  
+  b<-75
+  
+  labs <- levels(cut(filename$HHINCOME, b))
+  upper<- as.numeric( sub("[^,]*,([^]]*)\\]", "\\1", labs) )
+  
+  filename<-filename %>% 
+    mutate(new_bin = cut(HHINCOME, breaks=b, labels=upper))
+  rm(labs, upper)
+  
+
+  bins<-table(filename$new_bin)
+  cumsumbins<-cumsum(bins)
+  
+  bins<-as.data.frame(bins)
+  cumsumbins<-as.data.frame(cumsumbins)
+  
+  bins<-data.frame(bins,cumsumbins)
+  
+  bins$rf<-bins$Freq/sum(bins$Freq)
+  bins$cumbelow<-bins$cumsumbins/sum(bins$Freq)
+  bins$cumabove<-1-bins$cumbelow
+  bins$Var1<-as.numeric(as.character(bins$Var1))
+  #export(bins, "data96.xlsx")
+  
+  bins<-bins%>%
+    mutate(tipo=case_when(Var1 <158333  & cumbelow < 0.97 ~1,
+                          Var1 <158333  & cumbelow > 0.97 ~2))
+
+  
+      bins$tipo<-as.factor(bins$tipo)
+      levels(bins$tipo)<-c("Bottom 97%", "Top 3%")
+      bins$year<-i 
+      bins$type<-1
+  
+      
+  bins2<-bins%>%filter(cumabove>0 & Freq>0 & Var1<158333 & cumbelow<0.97)
+  bins2$lcumabove<-log(bins2$cumabove)
+      
+            
+  bins2<-bins%>%filter(cumabove>0 & Freq>0 & Var1<158333 & cumbelow<0.97)
+  bins2$lcumabove<-log(bins2$cumabove)
+  
+  R<-lm(bins2$lcumabove ~ bins2$Var1  -1)
+  R<--as.numeric(1/R$coefficients)
+  
+  bins$Var2<-bins$Var1/R
+  
+  assign(paste0("year", i,"_total"),bins)
+}
+```
+### By Sex 
+```{r}
+for (i in 2005:2019) {
+    filename<- cps_sw %>% 
+      filter(YEAR==i)
+    filename=subset(filename,select=c(HHINCOME, SEX, RACE_ETHD))
+    filename$HHINCOME=as.numeric(filename$HHINCOME)
+    for (j in levels(filename$SEX)){
+
+          b<-75
+    
+    labs <- levels(cut(filename$HHINCOME, b))
+    upper<- as.numeric( sub("[^,]*,([^]]*)\\]", "\\1", labs) )
+    
+    filename<-filename %>% 
+      mutate(new_bin = cut(HHINCOME, breaks=b, labels=upper))
+    rm(labs, upper)
+    
+
+    bins<-table(filename$new_bin)
+    cumsumbins<-cumsum(bins)
+    
+    bins<-as.data.frame(bins)
+    cumsumbins<-as.data.frame(cumsumbins)
+    
+    bins<-data.frame(bins,cumsumbins)
+    
+    bins$rf<-bins$Freq/sum(bins$Freq)
+    bins$cumbelow<-bins$cumsumbins/sum(bins$Freq)
+    bins$cumabove<-1-bins$cumbelow
+    bins$Var1<-as.numeric(as.character(bins$Var1))
+
+    bins<-bins%>%
+      mutate(tipo=case_when(Var1 <158333  & cumbelow < 0.97 ~1,
+                          Var1 <158333  & cumbelow > 0.97 ~2))
+
+  
+      bins$tipo<-as.factor(bins$tipo)
+      levels(bins$tipo)<-c("Bottom 97%", "Top 3%")
+      bins$year<-i 
+      bins$type<-j
+  
+      
+      bins2<-bins%>%filter(cumabove>0 & Freq>0 & Var1<158333 & cumbelow<0.97)
+      bins2$lcumabove<-log(bins2$cumabove)
+          
+                
+      bins2<-bins%>%filter(cumabove>0 & Freq>0 & Var1<158333 & cumbelow<0.97)
+      bins2$lcumabove<-log(bins2$cumabove)
+      
+      R<-lm(bins2$lcumabove ~ bins2$Var1  -1)
+      R<--as.numeric(1/R$coefficients)
+      
+      bins$Var2<-bins$Var1/R
+      
+      assign(paste0("year", i,"_total"),bins)
+  
+###### Sex Loop   
+ 
+      data_socid<-filename%>%filter(SEX==j)
+      bins<-table(data_socid$new_bin)
+      cumsumbins<-cumsum(bins)
+      
+      bins<-as.data.frame(bins)
+      cumsumbins<-as.data.frame(cumsumbins)
+      
+      bins<-data.frame(bins,cumsumbins)
+      
+      bins$rf<-bins$Freq/sum(bins$Freq)
+      bins$cumbelow<-bins$cumsumbins/sum(bins$Freq)
+      bins$cumabove<-1-bins$cumbelow
+      bins$Var1<-as.numeric(as.character(bins$Var1))
+    
+      bins<-bins%>%
+        mutate(tipo=case_when(Var1 <158333  & cumbelow < 0.97 ~1,
+                              Var1 <158333  & cumbelow > 0.97 ~2))
+      
+      
+      bins$tipo<-as.factor(bins$tipo)
+      levels(bins$tipo)<-c("Bottom 97%", "Top 3%")
+      bins$year<-i 
+      bins$type<-j
+
+  
+      bins2<-bins%>%filter(cumabove>0 & Freq>0 & Var1<158333 & cumbelow<0.97)
+      bins$Var2<-bins$Var1/R
+
+      assign(paste0("year",i,j),bins)
+    }}
+
+
+data_men<-rbind(year2005Male,
+                year2006Male,
+                year2007Male,
+                year2008Male,
+                year2009Male,
+                year2010Male,
+                year2011Male,
+                year2012Male,
+                year2013Male,
+                year2014Male,
+                year2015Male,
+                year2016Male,
+                year2017Male,
+                year2018Male,
+                year2019Male)
+
+data_women<-rbind(year2005Male,
+                  year2006Female,
+                  year2007Female,
+                  year2008Female,
+                  year2009Female,
+                  year2010Female,
+                  year2011Female,
+                  year2012Female,
+                  year2013Female,
+                  year2014Female,
+                  year2015Female,
+                  year2016Female,
+                  year2017Female,
+                  year2018Female,
+                  year2019Female)
+
+data_women$year1<-as.numeric(as.character(data$year))
+data_women$year<-as.factor(data$year)
+data_women$lcumabove<-log(data$cumabove)
+
+data_men$year1<-as.numeric(as.character(data$year))
+data_men$year<-as.factor(data$year)
+data_men$lcumabove<-log(data$cumabove)
+```
+
+### By Race 
+```{r}
+for (i in 2005:2019) {
+    filename<- cps_sw %>% 
+      filter(YEAR==i)
+    filename=subset(filename,select=c(HHINCOME, SEX, RACE_ETHD))
+    filename$HHINCOME=as.numeric(filename$HHINCOME)
+    for (j in levels(filename$RACE_ETHD)){
+
+          b<-75
+    
+    labs <- levels(cut(filename$HHINCOME, b))
+    upper<- as.numeric( sub("[^,]*,([^]]*)\\]", "\\1", labs) )
+    
+    filename<-filename %>% 
+      mutate(new_bin = cut(HHINCOME, breaks=b, labels=upper))
+    rm(labs, upper)
+    
+
+    bins<-table(filename$new_bin)
+    cumsumbins<-cumsum(bins)
+    
+    bins<-as.data.frame(bins)
+    cumsumbins<-as.data.frame(cumsumbins)
+    
+    bins<-data.frame(bins,cumsumbins)
+    
+    bins$rf<-bins$Freq/sum(bins$Freq)
+    bins$cumbelow<-bins$cumsumbins/sum(bins$Freq)
+    bins$cumabove<-1-bins$cumbelow
+    bins$Var1<-as.numeric(as.character(bins$Var1))
+
+    bins<-bins%>%
+      mutate(tipo=case_when(Var1 <158333  & cumbelow < 0.97 ~1,
+                          Var1 <158333  & cumbelow > 0.97 ~2))
+
+  
+      bins$tipo<-as.factor(bins$tipo)
+      levels(bins$tipo)<-c("Bottom 97%", "Top 3%")
+      bins$year<-i 
+      bins$type<-j
+  
+      
+      bins2<-bins%>%filter(cumabove>0 & Freq>0 & Var1<158333 & cumbelow<0.97)
+      bins2$lcumabove<-log(bins2$cumabove)
+          
+                
+      bins2<-bins%>%filter(cumabove>0 & Freq>0 & Var1<158333 & cumbelow<0.97)
+      bins2$lcumabove<-log(bins2$cumabove)
+      
+      R<-lm(bins2$lcumabove ~ bins2$Var1  -1)
+      R<--as.numeric(1/R$coefficients)
+      
+      bins$Var2<-bins$Var1/R
+      
+###### Race Loop   
+ 
+      data_socid<-filename%>%filter(RACE_ETHD==j)
+      bins<-table(data_socid$new_bin)
+      cumsumbins<-cumsum(bins)
+      
+      bins<-as.data.frame(bins)
+      cumsumbins<-as.data.frame(cumsumbins)
+      
+      bins<-data.frame(bins,cumsumbins)
+      
+      bins$rf<-bins$Freq/sum(bins$Freq)
+      bins$cumbelow<-bins$cumsumbins/sum(bins$Freq)
+      bins$cumabove<-1-bins$cumbelow
+      bins$Var1<-as.numeric(as.character(bins$Var1))
+    
+      bins<-bins%>%
+        mutate(tipo=case_when(Var1 <158333  & cumbelow < 0.97 ~1,
+                              Var1 <158333  & cumbelow > 0.97 ~2))
+      
+      
+      bins$tipo<-as.factor(bins$tipo)
+      levels(bins$tipo)<-c("Bottom 97%", "Top 3%")
+      bins$year<-i 
+      bins$type<-j
+
+  
+      bins2<-bins%>%filter(cumabove>0 & Freq>0 & Var1<158333 & cumbelow<0.97)
+      bins$Var2<-bins$Var1/R
+
+      assign(paste0("year",i,j),bins)
+    }}
+
+```
+
+### By State
+
+```{r}
+for (i in 2005:2019){
+    filename<- cps_sw %>% 
+      filter(YEAR==i)
+    filename=subset(filename,select=c(HHINCOME, SEX, STATEFIP))
+    filename$HHINCOME=as.numeric(filename$HHINCOME)
+    for (j in states){
+
+          b<-75
+    
+    labs <- levels(cut(filename$HHINCOME, b))
+    upper<- as.numeric( sub("[^,]*,([^]]*)\\]", "\\1", labs) )
+    
+    filename<-filename %>% 
+      mutate(new_bin = cut(HHINCOME, breaks=b, labels=upper))
+    rm(labs, upper)
+    
+
+    bins<-table(filename$new_bin)
+    cumsumbins<-cumsum(bins)
+    
+    bins<-as.data.frame(bins)
+    cumsumbins<-as.data.frame(cumsumbins)
+    
+    bins<-data.frame(bins,cumsumbins)
+    
+    bins$rf<-bins$Freq/sum(bins$Freq)
+    bins$cumbelow<-bins$cumsumbins/sum(bins$Freq)
+    bins$cumabove<-1-bins$cumbelow
+    bins$Var1<-as.numeric(as.character(bins$Var1))
+
+    bins<-bins%>%
+      mutate(tipo=case_when(Var1 <158333  & cumbelow < 0.97 ~1,
+                          Var1 <158333  & cumbelow > 0.97 ~2))
+
+  
+      bins$tipo<-as.factor(bins$tipo)
+      levels(bins$tipo)<-c("Bottom 97%", "Top 3%")
+      bins$year<-i 
+      bins$type<-j
+  
+      
+      bins2<-bins%>%filter(cumabove>0 & Freq>0 & Var1<158333 & cumbelow<0.97)
+      bins2$lcumabove<-log(bins2$cumabove)
+          
+                
+      bins2<-bins%>%filter(cumabove>0 & Freq>0 & Var1<158333 & cumbelow<0.97)
+      bins2$lcumabove<-log(bins2$cumabove)
+      
+      R<-lm(bins2$lcumabove ~ bins2$Var1  -1)
+      R<--as.numeric(1/R$coefficients)
+      
+      bins$Var2<-bins$Var1/R
+      
+###### State Loop   
+ 
+      data_socid<-filename%>%filter(j %in% states )
+      bins<-table(data_socid$new_bin)
+      cumsumbins<-cumsum(bins)
+      
+      bins<-as.data.frame(bins)
+      cumsumbins<-as.data.frame(cumsumbins)
+      
+      bins<-data.frame(bins,cumsumbins)
+      
+      bins$rf<-bins$Freq/sum(bins$Freq)
+      bins$cumbelow<-bins$cumsumbins/sum(bins$Freq)
+      bins$cumabove<-1-bins$cumbelow
+      bins$Var1<-as.numeric(as.character(bins$Var1))
+    
+      bins<-bins%>%
+        mutate(tipo=case_when(Var1 <158333  & cumbelow < 0.97 ~1,
+                              Var1 <158333  & cumbelow > 0.97 ~2))
+      
+      
+      bins$tipo<-as.factor(bins$tipo)
+      levels(bins$tipo)<-c("Bottom 97%", "Top 3%")
+      bins$year<-i 
+      bins$type<-j
+
+  
+      bins2<-bins%>%filter(cumabove>0 & Freq>0 & Var1<158333 & cumbelow<0.97)
+      bins$Var2<-bins$Var1/R
+
+      assign(paste0("year_state",i,j),bins)
+    }
+}
+```
+
+
+
+### Bind Race Data together 
+```{r}
+
+data_total<-rbind(year2005_total, year2006_total, year2007_total, year2008_total,    
+           year2009_total, year2010_total, year2011_total, year2012_total,
+           year2013_total, year2014_total, year2015_total, year2016_total,
+           year2017_total, year2018_total, year2019_total)
+
+
+white <- rbind(`year2005white`, `year2006white`, `year2007white`,   
+         `year2009white`, `year2010white`, `year2011white`, 
+         `year2013white`, `year2014white`, `year2015white`, 
+         `year2017white`, `year2018white`, `year2019white`,
+         `year2005white`, `year2006white`, `year2007white`,   
+         `year2009white`, `year2010white`, `year2011white`, 
+         `year2013white`, `year2014white`, `year2015white`, 
+         `year2017white`, `year2018white`, `year2019white`)
+
+black <- rbind(`year2005black`, `year2006black`, `year2007black`,   
+         `year2009black`, `year2010black`, `year2011black`, 
+         `year2013black`, `year2014black`, `year2015black`, 
+         `year2017black`, `year2018black`, `year2019black`,
+         `year2005black`, `year2006black`, `year2007black`,   
+         `year2009black`, `year2010black`, `year2011black`, 
+         `year2013black`, `year2014black`, `year2015black`, 
+         `year2017black`, `year2018black`, `year2019black`)
+  
+  
+asian <- rbind(`year2005asian`, `year2006asian`, `year2007asian`,   
+         `year2009asian`, `year2010asian`, `year2011asian`, 
+         `year2013asian`, `year2014asian`, `year2015asian`, 
+         `year2017asian`, `year2018asian`, `year2019asian`,
+         `year2005asian`, `year2006asian`, `year2007asian`,   
+         `year2009asian`, `year2010asian`, `year2011asian`, 
+         `year2013asian`, `year2014asian`, `year2015asian`, 
+         `year2017asian`, `year2018asian`, `year2019asian`)
+
+hispanic <- rbind(`year2005hispanic`, `year2006hispanic`, `year2007hispanic`,   
+         `year2009hispanic`, `year2010hispanic`, `year2011hispanic`, 
+         `year2013hispanic`, `year2014hispanic`, `year2015hispanic`, 
+         `year2017hispanic`, `year2018hispanic`, `year2019hispanic`,
+         `year2005hispanic`, `year2006hispanic`, `year2007hispanic`,   
+         `year2009hispanic`, `year2010hispanic`, `year2011hispanic`, 
+         `year2013hispanic`, `year2014hispanic`, `year2015hispanic`, 
+         `year2017hispanic`, `year2018hispanic`, `year2019hispanic`)
+
+amer_indian<- rbind(`year2005american indian`, `year2006american indian`, `year2007american indian`,   
+         `year2009american indian`, `year2010american indian`, `year2011american indian`, 
+         `year2013american indian`, `year2014american indian`, `year2015american indian`, 
+         `year2017american indian`, `year2018american indian`, `year2019american indian`,
+         `year2005american indian`, `year2006american indian`, `year2007american indian`,   
+         `year2009american indian`, `year2010american indian`, `year2011american indian`, 
+         `year2013american indian`, `year2014american indian`, `year2015american indian`, 
+         `year2017american indian`, `year2018american indian`, `year2019american indian`)
+
+
+race_group<-c("asian", "american indian", "white", "black", "hispanic")
+
+race_data<-rbind(asian, white, black, amer_indian, hispanic)
+race_data$year<-as.factor(race_data$year)
+race_data$type<-as.factor(race_data$type)
+race_data$lcumabove<-log(data$cumabove)
+```
+ 
+### Plot the Figures
+#### Sex
+```{r}
+sex_data<-rbind(data_men, data_women)
+mf_group<-c("Male", "Female")
+#Figures 
+for (i in mf_group){
+plot<-sex_data%>%filter(cumbelow<0.97 & type==i)%>%
+  ggplot(aes(., x=Var2, y=cumabove, shape=year, color=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(sex_data$year)) +
+  scale_y_continuous(trans='log10') +
+  #scale_x_continuous(trans='log10', labels=comma)+
+  geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title=paste0(i,"Individuals 2005-2019"), subtitle="(log-linear)", x="Relative Income (r/R)", y="Cumulative Probability")+
+  theme_classic()
+assign(paste0(i,"_plot"),plot)
+
+
+## bottom
+bottom<-sex_data%>%filter(Var1<158333 & cumbelow<0.97,
+                      type==i)%>%
+  ggplot(aes(sex_data, x=Var1, y=cumabove, shape=year, colour=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(sex_data$year)) +
+  scale_y_continuous(trans='log10', minor_breaks = minor_breaks) +
+  scale_x_continuous(labels = comma_format(big.mark = ",",
+                                           decimal.mark = "."))+
+  geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title=paste0(i,"Bottom 97%"), subtitle="(log-linear)", x="Household Income in 2012 dollars", y="Cumulative Probability")+
+   theme_classic()+
+  theme(legend.position = "none")+
+  theme(legend.title = element_blank(), panel.grid.major = element_line(size = 0.5, color="grey"), panel.grid.minor = element_line(size=0.5))
+
+assign(paste0(i,"_plot_bottom"),bottom)
+
+
+## top 
+top<-sex_data%>%filter(Var1<158333 & cumbelow>0.97,
+                   type==i)%>%
+  ggplot(aes(sex_data, x=Var1, y=cumabove, shape=year, colour=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(sex_data$year)) +
+  scale_y_continuous(trans='log10', minor_breaks = minor_breaks) +
+  scale_x_continuous(trans='log10', labels=comma, minor_breaks = minor_breaks)+
+  geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title=paste0(i,"Top 3%"), subtitle="(log-log)", x="Household Income in 2012 dollars", y="Cumulative Probability")+
+   theme_classic()+
+  theme(legend.position = "none") +
+  theme(legend.title = element_blank(), panel.grid.major = element_line(size = 0.5, color="grey"), panel.grid.minor = element_line(size=0.5))
+assign(paste0(i,"_plot_top"),top)
+
+
+log_log_plot<- sex_data%>%filter(Var1<158333 & type==i)%>%
+  ggplot(aes(sex_data, x=Var2, y=cumabove, shape=year, colour=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(sex_data$year)) +
+  scale_y_continuous(trans='log10', minor_breaks = minor_breaks) +
+  scale_x_continuous(trans='log10', labels=comma, minor_breaks = minor_breaks)+
+  geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title="Top 3%", subtitle="(log-log)", x="Relative Income (r/R)", y="Cumulative Probability")+
+   theme_classic()+
+  theme(legend.position = "none") +
+  theme(legend.title = element_blank(), panel.grid.major = element_line(size = 0.5, color="grey"), panel.grid.minor = element_line(size=0.5))
+assign(paste0(i,"_plot_ll"),log_log_plot)
+}
+
+
+## Run in console to save because of weird Rmarkdown thing. 
+ggsave(Female_plot, path = "Pareto_plots", filename="women_plot.png")
+ggsave(Male_plot, path = "Pareto_plots", filename="men_plot.png")
+
+ggsave(Female_plot_bottom, path = "Pareto_plots", filename="women_plot_bottom.png")
+ggsave(Male_plot_bottom, path = "Pareto_plots", filename="men_plot_bottom.png")
+
+ggsave(Female_plot_top, path = "Pareto_plots", filename="women_plot_top.png")
+ggsave(Male_plot_top, path = "Pareto_plots", filename="men_plot_top.png")
+
+ggsave(Female_plot_ll, path = "Pareto_plots", filename="women_plot_ll.png")
+ggsave(Male_plot_ll, path = "Pareto_plots", filename="men_plot_ll.png")
+
+
+#ggsave(temp_plot, path = "Pareto", file=paste0("plot_", i,".png"), width = 14, height = 10, units = "cm")
+```
+
+#### Race
+
+```{r}
+for (i in race_group){
+plot<-race_data%>%filter(cumbelow<0.97 & type==i)%>%
+  ggplot(aes(., x=Var2, y=cumabove, shape=year, color=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(race_data$year)) +
+  scale_y_continuous(trans='log10') +
+  #scale_x_continuous(trans='log10', labels=comma)+
+  geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title=paste0(i,"Individuals 2005-2019"), subtitle="(log-linear)", x="Relative Income (r/R)", y="Cumulative Probability")+
+  theme_classic()
+assign(paste0(i,"_plot"),plot)
+
+
+## bottom
+bottom<-race_data%>%filter(Var1<158333 & cumbelow<0.97,
+                      type==i)%>%
+  ggplot(aes(race_data, x=Var1, y=cumabove, shape=year, colour=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(race_data$year)) +
+  scale_y_continuous(trans='log10', minor_breaks = minor_breaks) +
+  scale_x_continuous(labels = comma_format(big.mark = ",",
+                                           decimal.mark = "."))+
+  geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title=paste0(i,"Bottom 97%"), subtitle="(log-linear)", x="Household Income in 2012 dollars", y="Cumulative Probability")+
+   theme_classic()+
+  theme(legend.position = "none")+
+  theme(legend.title = element_blank(), panel.grid.major = element_line(size = 0.5, color="grey"), panel.grid.minor = element_line(size=0.5))
+
+assign(paste0(i,"_plot_bottom"),bottom)
+
+
+## top 
+top<-race_data%>%filter(Var1<158333 & cumbelow>0.97,
+                   type==i)%>%
+  ggplot(aes(race_data, x=Var1, y=cumabove, shape=year, colour=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(race_data$year)) +
+  scale_y_continuous(trans='log10', minor_breaks = minor_breaks) +
+  scale_x_continuous(trans='log10', labels=comma, minor_breaks = minor_breaks)+
+  geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title=paste0(i,"Top 3%"), subtitle="(log-log)", x="Household Income in 2012 dollars", y="Cumulative Probability")+
+   theme_classic()+
+  theme(legend.position = "none") +
+  theme(legend.title = element_blank(), panel.grid.major = element_line(size = 0.5, color="grey"), panel.grid.minor = element_line(size=0.5))
+assign(paste0(i,"_plot_top"),top)
+
+
+log_log_plot<- race_data%>%filter(Var1<158333 & type==i)%>%
+  ggplot(aes(race_data, x=Var2, y=cumabove, shape=year, colour=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(race_data$year)) +
+  scale_y_continuous(trans='log10', minor_breaks = minor_breaks) +
+  scale_x_continuous(trans='log10', labels=comma, minor_breaks = minor_breaks)+
+  geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title=paste0(i,"Individuals 2005-2019"), subtitle="(log-log)", x="Relative Income (r/R)", y="Cumulative Probability")+
+   theme_classic()+
+  theme(legend.position = "none") +
+  theme(legend.title = element_blank(), panel.grid.major = element_line(size = 0.5, color="grey"), panel.grid.minor = element_line(size=0.5))
+assign(paste0(i,"_plot_ll"),log_log_plot)
+}
+```
+#### American Indians
+
+```{r}
+amer_indian_plot<-race_data%>%filter(cumbelow<0.97 & type=="american indian")%>%
+  ggplot(aes(., x=Var2, y=cumabove, shape=year, color=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(race_data$year)) +
+  scale_y_continuous(trans='log10') +
+  #scale_x_continuous(trans='log10', labels=comma)+
+  geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title=paste0(i,"Individuals 2005-2019"), subtitle="(log-linear)", x="Relative Income (r/R)", y="Cumulative Probability")+
+  theme_classic()
+
+amer_indian_plot_ll<-race_data%>%filter(Var1<158333 & type=="american indian")%>%
+  ggplot(aes(race_data, x=Var2, y=cumabove, shape=year, colour=year))+
+  geom_point()+
+  scale_shape_manual(values=1:nlevels(race_data$year)) +
+  scale_y_continuous(trans='log10', minor_breaks = minor_breaks) +
+  scale_x_continuous(trans='log10', labels=comma, minor_breaks = minor_breaks)+
+  geom_smooth(se=FALSE, method="lm", formula= y ~ x, linetype="dotdash")+
+  labs(title="Individuals 2005-2019", subtitle="(log-log)", x="Relative Income (r/R)", y="Cumulative Probability")+
+   theme_classic()+
+  theme(legend.position = "none") +
+  theme(legend.title = element_blank(), panel.grid.major = element_line(size = 0.5, color="grey"), panel.grid.minor = element_line(size=0.5))
+
+```
+
+```{r}
+#Total
+ggsave(white_plot, path = "Pareto_plots", filename="white_plot.png")
+ggsave(black_plot, path = "Pareto_plots", filename="black_plot.png")
+ggsave(hispanic_plot, path = "Pareto_plots", filename="hispanic_plot.png")
+ggsave(asian_plot, path = "Pareto_plots", filename="asian_plot.png")
+ggsave(amer_indian_plot, path = "Pareto_plots", filename="american_indian_plot.png")
+
+#Bottom
+ggsave(white_plot_bottom, path = "Pareto_plots", filename="white_plot_bottom.png")
+ggsave(black_plot_bottom, path = "Pareto_plots", filename="black_plot_bottom.png")
+ggsave(hispanic_plot_bottom, path = "Pareto_plots", filename="hispanic_plot_bottom.png")
+ggsave(asian_plot_bottom, path = "Pareto_plots", filename="asian_plot_bottom.png")
+ggsave(amer_indian_plot_bottom, path = "Pareto_plots", filename="american_indian_plot_bottom.png")
+
+#Top
+ggsave(white_plot_top, path = "Pareto_plots", filename="white_plot_top.png")
+ggsave(black_plot_top, path = "Pareto_plots", filename="black_plot_top.png")
+ggsave(hispanic_plot_top, path = "Pareto_plots", filename="hispanic_plot_top.png")
+ggsave(asian_plot_top, path = "Pareto_plots", filename="asian_plot_top.png")
+ggsave(amer_indian_plot_top, path = "Pareto_plots", filename="american_indian_plot_top.png")
+
+#Log-Log Plot 
+ggsave(white_plot_ll, path = "Pareto_plots", filename="white_plot_ll.png")
+ggsave(black_plot_ll, path = "Pareto_plots", filename="black_plot_ll.png")
+ggsave(hispanic_plot_ll, path = "Pareto_plots", filename="hispanic_plot_ll.png")
+ggsave(asian_plot_ll, path = "Pareto_plots", filename="asian_plot_ll.png")
+ggsave(amer_indian_plot_ll, path = "Pareto_plots", filename="american_indian_plot_ll.png")
+```
+
+
+#### State 
+
+
+What graphs do I want to show. I am thinking we copy what Anwar did (White and Black), but then include Hispanics and American Indian. Also, might as well include asians, so that is 5 total. Not too bad for a days work. 
+
+```{r}
+
+```
+
