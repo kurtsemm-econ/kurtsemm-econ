@@ -1,0 +1,279 @@
+﻿state_cd,2s,4,4,4,4,4,4,4
+state_name,40s,Arizona,Arizona,Arizona,Arizona,Arizona,Arizona,Arizona
+year,4s,1985,1990,1995,2000,2005,2010,2015
+"Total Population total population of area, in thousands",16s,3279.22,3665.23,4217.94,5130.66,5939.292,6392.333,6828.065
+"Public Supply population served by groundwater, in thousands",16s,1930.42,2188.68,2244.85,2329.244,-,3479.722,3270.049
+"Public Supply population served by surface water, in thousands",16s,1159.72,1206.28,1672.18,2536.758,-,2694.441,3339.846
+"Public Supply total population served, in thousands",16s,3090.14,3394.96,3917.03,4866.002,5721.202,6174.163,6609.895
+"Public Supply self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,385.04,401.23,409.38,493.16,567.24,585.07,568.92
+"Public Supply self-supplied groundwater withdrawals, saline, in Mgal/d",16s,0,0,0,0,0,0,0
+"Public Supply total self-supplied withdrawals, groundwater, in Mgal/d",16s,385.04,401.23,409.38,493.16,567.24,585.07,568.92
+"Public Supply self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,233.17,305.36,398,612.62,601.65,628.35,626.23
+"Public Supply self-supplied surface-water withdrawals, saline, in Mgal/d",16s,0,0,0,0,0,0,0
+"Public Supply total self-supplied withdrawals, surface water, in Mgal/d",16s,233.17,305.36,398,612.62,601.65,628.35,626.23
+"Public Supply total self-supplied withdrawals, fresh, in Mgal/d",16s,618.21,706.59,807.38,1105.78,1168.89,1213.42,1195.15
+"Public Supply total self-supplied withdrawals, saline, in Mgal/d",16s,0,0,0,0,0,0,0
+"Public Supply total self-supplied withdrawals, total, in Mgal/d",16s,618.21,706.59,807.38,1105.78,1168.89,1213.42,1195.15
+"Public Supply deliveries to domestic, in Mgal/d",16s,449.11,508.93,525.85,839.36,887.74,912.01,963.3
+"Public Supply deliveries to commercial, in Mgal/d",16s,90.39,117.07,134.56,-,-,193.36,231.8
+"Public Supply deliveries to industrial, in Mgal/d",16s,78.73,78.49,66.27,-,-,0,-
+"Public Supply deliveries to thermoelectric, in Mgal/d",16s,0,0,0,-,-,0.43,0.5
+"Public Supply total deliveries, in Mgal/d",16s,618.23,704.49,726.68,-,-,1105.8,-
+"Public Supply public use and losses, in Mgal/d",16s,-0.02,2.1,80.7,-,-,107.62,-
+"Public Supply per capita use, in gallons/person/day",16s,200,208,206,227,204,197,181
+"Public Supply reclaimed wastewater, in Mgal/d",16s,0,0,0,-,-,0,0
+Public Supply number of facilities,16s,0,496,578,832,832,832,-
+"Domestic self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,25.58,31.6,39.32,28.81,27.16,27.18,24
+"Domestic self-supplied groundwater withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Domestic total self-supplied withdrawals, groundwater, in Mgal/d",16s,25.58,31.6,39.32,-,-,-,-
+"Domestic self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,1.36,0.26,0.02,0,0,0,0
+"Domestic self-supplied surface-water withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Domestic total self-supplied withdrawals, surface water, in Mgal/d",16s,1.36,0.26,0.02,-,-,-,-
+"Domestic total self-supplied withdrawals, fresh, in Mgal/d",16s,26.94,31.86,39.34,28.81,27.16,27.18,24
+"Domestic self-supplied population, in thousands",16s,189.08,270.27,300.91,264.658,218.09,218.17,218.17
+"Domestic deliveries from public supply, in Mgal/d",16s,449.11,508.93,525.85,839.36,887.74,912.01,963.3
+"Domestic total self-supplied withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Domestic per capita use, public-supplied, in gallons/person/day",16s,145,150,134,172,155,148,146
+"Domestic total self-supplied withdrawals, in Mgal/d",16s,26.94,31.86,39.34,-,-,-,-
+"Domestic total self-supplied withdrawals plus deliveries, in Mgal/d",16s,476.05,540.79,565.19,868.17,914.9,939.19,987.3
+"Domestic consumptive use, fresh, in Mgal/d",16s,274.84,267.92,282.56,-,-,-,-
+"Domestic consumptive use, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Domestic total consumptive use, in Mgal/d",16s,274.84,267.92,282.56,-,-,-,-
+"Domestic per capita use, self-supplied, in gallons/person/day",16s,142,118,131,109,125,125,110
+"Commercial self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,16.76,17.76,20.76,-,-,20.24,20.46
+"Commercial self-supplied groundwater withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Commercial total self-supplied withdrawals, groundwater, in Mgal/d",16s,16.76,17.76,20.76,-,-,-,-
+"Commercial self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,0.12,0,0,-,-,0,0
+"Commercial self-supplied surface-water withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Commercial total self-supplied withdrawals, surface water, in Mgal/d",16s,0.12,0,0,-,-,-,-
+"Commercial total self-supplied withdrawals, fresh, in Mgal/d",16s,16.88,17.76,20.76,-,-,20.24,20.46
+"Commercial total self-supplied withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Commercial total self-supplied withdrawals, in Mgal/d",16s,16.88,17.76,20.76,-,-,-,-
+"Commercial deliveries from public supply, in Mgal/d",16s,90.39,117.07,134.56,-,-,193.36,231.8
+"Commercial total self-supplied withdrawals plus deliveries, in Mgal/d",16s,107.27,134.83,155.32,-,-,-,-
+"Commercial consumptive use, fresh, in Mgal/d",16s,54.04,61.06,77.79,-,-,-,-
+"Commercial consumptive use, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Commercial total consumptive use, in Mgal/d",16s,54.04,61.06,77.79,-,-,-,-
+"Commercial reclaimed wastewater, in Mgal/d",16s,0,0,0,-,-,0,-
+"Industrial self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,44.16,39.12,39.26,15.83,13.21,12.92,6.12
+"Industrial self-supplied groundwater withdrawals, saline, in Mgal/d",16s,8.34,0,0,0,0,0,0
+"Industrial total self-supplied withdrawals, groundwater, in Mgal/d",16s,52.5,39.12,39.26,15.83,13.21,12.92,6.12
+"Industrial self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,0.72,0,0,0,0,0,0
+"Industrial self-supplied surface-water withdrawals, saline, in Mgal/d",16s,0,0,0,0,0,0,0
+"Industrial total self-supplied withdrawals, surface water, in Mgal/d",16s,0.72,0,0,0,0,0,0
+"Industrial total self-supplied withdrawals, fresh, in Mgal/d",16s,44.88,39.12,39.26,15.83,13.21,12.92,6.12
+"Industrial total self-supplied withdrawals, saline, in Mgal/d",16s,8.34,0,0,0,0,0,0
+"Industrial total self-supplied withdrawals, in Mgal/d",16s,53.22,39.12,39.26,15.83,13.21,12.92,6.12
+"Industrial deliveries from public supply, in Mgal/d",16s,78.73,78.49,66.27,-,-,0,-
+"Industrial total self-supplied withdrawals plus deliveries, in Mgal/d",16s,131.95,117.61,105.53,-,-,12.92,-
+"Industrial consumptive use, fresh, in Mgal/d",16s,78.37,98.48,98.42,-,-,-,-
+"Industrial consumptive use, saline, in Mgal/d",16s,8.34,0,0,-,-,0,-
+"Industrial total consumptive use, in Mgal/d",16s,86.71,98.48,98.42,-,-,-,-
+"Industrial reclaimed wastewater, in Mgal/d",16s,4.91,2.27,2.27,-,0,0,-
+Industrial number of facilities,16s,0,518,0,-,86,86,-
+"Total Thermoelectric Power self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,31.84,41.92,41.7,49.96,60.41,68.98,57.71
+"Total Thermoelectric Power self-supplied groundwater withdrawals, saline, in Mgal/d",16s,0,0,0,0,0,0,0
+"Total Thermoelectric Power total self-supplied withdrawals, groundwater, in Mgal/d",16s,31.84,41.92,41.7,49.96,60.41,68.98,57.71
+"Total Thermoelectric Power self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,20.73,61.31,19.8,26.15,38.52,29.2,25.75
+"Total Thermoelectric Power self-supplied surface-water withdrawals, saline, in Mgal/d",16s,4.61,0.42,0,0,0,0,0
+"Total Thermoelectric Power total self-supplied withdrawals, surface water, in Mgal/d",16s,25.34,61.73,19.8,26.15,38.52,29.2,25.75
+"Total Thermoelectric Power total self-supplied withdrawals, fresh, in Mgal/d",16s,52.57,103.23,61.5,76.11,98.93,98.18,83.46
+"Total Thermoelectric Power total self-supplied withdrawals, saline, in Mgal/d",16s,4.61,0.42,0,0,0,0,0
+"Total Thermoelectric Power total self-supplied withdrawals, total, in Mgal/d",16s,57.18,103.65,61.5,76.11,98.93,98.18,83.46
+"Total Thermoelectric Power total self-supplied withdrawals plus deliveries, in Mgal/d",16s,57.18,103.65,61.5,-,-,98.61,83.96
+"Total Thermoelectric Power consumptive use, fresh, in Mgal/d",16s,52.57,100.32,53.78,-,-,162.66,147
+"Total Thermoelectric Power consumptive use, saline, in Mgal/d",16s,4.61,0.38,0,-,-,0,0
+"Total Thermoelectric Power total consumptive use, in Mgal/d",16s,57.18,100.7,53.78,-,-,162.66,147
+"Total Thermoelectric Power power generated, in gigawatt-hours",16s,26173.17,55866.5,65293.76,-,92138.35,104838.45,102099.42
+"Total Thermoelectric Power reclaimed wastewater, in Mgal/d",16s,0,0,53.56,-,-,67.65,67.72
+Total Thermoelectric Power number of facilities,16s,1,40,16,15,24,25,25
+"Fossil-fuel Thermoelectric Power self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,29.86,41.82,41.7,-,-,-,-
+"Fossil-fuel Thermoelectric Power self-supplied groundwater withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Fossil-fuel Thermoelectric Power total self-supplied withdrawals, groundwater, in Mgal/d",16s,29.86,41.82,41.7,-,-,-,-
+"Fossil-fuel Thermoelectric Power self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,20.73,18.46,19.8,-,-,-,-
+"Fossil-fuel Thermoelectric Power self-supplied surface-water withdrawals, saline, in Mgal/d",16s,0,0.42,0,-,-,-,-
+"Fossil-fuel Thermoelectric Power total self-supplied withdrawals, surface water, in Mgal/d",16s,20.73,18.88,19.8,-,-,-,-
+"Fossil-fuel Thermoelectric Power total self-supplied withdrawals, fresh, in Mgal/d",16s,50.59,60.28,61.5,-,-,-,-
+"Fossil-fuel Thermoelectric Power total self-supplied withdrawals, saline, in Mgal/d",16s,0,0.42,0,-,-,-,-
+"Fossil-fuel Thermoelectric Power total self-supplied withdrawals, in Mgal/d",16s,50.59,60.7,61.5,-,-,-,-
+"Fossil-fuel Thermoelectric Power deliveries from public supply, in Mgal/d",16s,0,0,0,-,-,-,-
+"Fossil-fuel Thermoelectric Power total self-supplied withdrawals plus deliveries, in Mgal/d",16s,50.59,60.7,61.5,-,-,-,-
+"Fossil-fuel Thermoelectric Power consumptive use, fresh, in Mgal/d",16s,50.59,60.04,53.78,-,-,-,-
+"Fossil-fuel Thermoelectric Power consumptive use, saline, in Mgal/d",16s,0,0.38,0,-,-,-,-
+"Fossil-fuel Thermoelectric Power total consumptive use, in Mgal/d",16s,50.59,60.42,53.78,-,-,-,-
+"Fossil-fuel Thermoelectric Power power generation, in gigawatt-hours",16s,25043,35268.81,36690.96,-,-,-,-
+"Fossil-fuel Thermoelectric Power reclaimed wastewater, in Mgal/d",16s,0,0,0,-,-,-,-
+Fossil-fuel Thermoelectric Power number of facilities,16s,0,39,15,-,-,-,-
+"Geothermal Thermoelectric Power self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power self-supplied groundwater withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power total self-supplied withdrawals, groundwater, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power self-supplied surface-water withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power total self-supplied withdrawals, surface water, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power total self-supplied withdrawals, fresh, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power total self-supplied withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power total self-supplied withdrawals, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power deliveries from public supply, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power total self-supplied withdrawals plus deliveries, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power consumptive use, fresh, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power consumptive use, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power total consumptive use, in Mgal/d",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power power generation, in gigawatt-hours",16s,0,0,0,-,-,-,-
+"Geothermal Thermoelectric Power reclaimed wastewater, in Mgal/d",16s,0,0,0,-,-,-,-
+Geothermal Thermoelectric Power number of facilities,16s,0,0,0,-,-,-,-
+"Nuclear Thermoelectric Power self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,1.98,0.1,0,-,-,-,-
+"Nuclear Thermoelectric Power self-supplied groundwater withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Nuclear Thermoelectric Power total self-supplied withdrawals, groundwater, in Mgal/d",16s,1.98,0.1,0,-,-,-,-
+"Nuclear Thermoelectric Power self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,0,42.85,0,-,-,-,-
+"Nuclear Thermoelectric Power self-supplied surface-water withdrawals, saline, in Mgal/d",16s,4.61,0,0,-,-,-,-
+"Nuclear Thermoelectric Power total self-supplied withdrawals, surface water, in Mgal/d",16s,4.61,42.85,0,-,-,-,-
+"Nuclear Thermoelectric Power total self-supplied withdrawals, fresh, in Mgal/d",16s,1.98,42.95,0,-,-,-,-
+"Nuclear Thermoelectric Power total self-supplied withdrawals, saline, in Mgal/d",16s,4.61,0,0,-,-,-,-
+"Nuclear Thermoelectric Power total self-supplied withdrawals, in Mgal/d",16s,6.59,42.95,0,-,-,-,-
+"Nuclear Thermoelectric Power deliveries from public supply, in Mgal/d",16s,0,0,0,-,-,-,-
+"Nuclear Thermoelectric Power total self-supplied withdrawals plus deliveries, in Mgal/d",16s,6.59,42.95,0,-,-,-,-
+"Nuclear Thermoelectric Power consumptive use, fresh, in Mgal/d",16s,1.98,40.28,0,-,-,-,-
+"Nuclear Thermoelectric Power consumptive use, saline, in Mgal/d",16s,4.61,0,0,-,-,-,-
+"Nuclear Thermoelectric Power total consumptive use, in Mgal/d",16s,6.59,40.28,0,-,-,-,-
+"Nuclear Thermoelectric Power power generation, in gigawatt-hours",16s,1130.17,20597.69,28602.8,-,-,-,-
+"Nuclear Thermoelectric Power reclaimed wastewater, in Mgal/d",16s,0,0,53.56,-,-,-,-
+Nuclear Thermoelectric Power number of facilities,16s,1,1,1,-,-,-,-
+"Thermoelectric Power (Once-through cooling) self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Once-through cooling) self-supplied groundwater withdrawals, saline, in Mgal/d",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Once-through cooling) total self-supplied withdrawals, groundwater, in Mgal/d",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Once-through cooling) self-supplied surface-water withdrawals, fresh, in Mgal/",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Once-through cooling) self-supplied surface-water withdrawals, saline, in Mgal",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Once-through cooling) total self-supplied withdrawals, surface water, in Mgal/",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Once-through cooling) total self-supplied withdrawals, fresh, in Mgal/d",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Once-through cooling) total self-supplied withdrawals, saline, in Mgal/d",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Once-through cooling) total self-supplied withdrawals, total, in Mgal/d",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Once-through cooling) deliveries from public supply, in Mgal/d",16s,-,-,-,-,-,0,0
+"Thermoelectric Power (Once-through cooling) total self-supplied withdrawals plus deliveries, in Mgal",16s,-,-,-,-,-,0,0
+"Thermoelectric Power (Once-through cooling) consumptive use, fresh, in Mgal/d",16s,-,-,-,-,-,0,0
+"Thermoelectric Power (Once-through cooling) consumptive use, saline, in Mgal/d",16s,-,-,-,-,-,0,0
+"Thermoelectric Power (Once-through cooling) total consumptive use, in Mgal/d",16s,-,-,-,-,-,0,0
+"Thermoelectric Power (Once-through cooling) power generated, in gigawatt-hours",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Once-through cooling) reclaimed wastewater, in Mgal/d",16s,-,-,-,-,-,0,0
+Thermoelectric Power (Once-through cooling) number of facilities,16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Closed-loop cooling) self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,-,-,-,49.96,60.41,68.98,57.71
+"Thermoelectric Power (Closed-loop cooling) self-supplied groundwater withdrawals, saline, in Mgal/d",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Closed-loop cooling) total self-supplied withdrawals, groundwater, in Mgal/d",16s,-,-,-,49.96,60.41,68.98,57.71
+"Thermoelectric Power (Closed-loop cooling) self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,-,-,-,26.15,38.52,29.2,25.75
+"Thermoelectric Power (Closed-loop cooling) self-supplied surface-water withdrawals, saline, in Mgal/",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Closed-loop cooling) total self-supplied withdrawals, surface water, in Mgal/d",16s,-,-,-,26.15,38.52,29.2,25.75
+"Thermoelectric Power (Closed-loop cooling) total self-supplied withdrawals, fresh, in Mgal/d",16s,-,-,-,76.11,98.93,98.18,83.46
+"Thermoelectric Power (Closed-loop cooling) total self-supplied withdrawals, saline, in Mgal/d",16s,-,-,-,0,0,0,0
+"Thermoelectric Power (Closed-loop cooling) total self-supplied withdrawals, total, in Mgal/d",16s,-,-,-,76.11,98.93,98.18,83.46
+"Thermoelectric Power (Closed-loop cooling) deliveries from public supply, in Mgal/d",16s,-,-,-,-,-,0.43,0.5
+"Thermoelectric Power (Closed-loop cooling) total self-supplied withdrawals plus deliveries, in Mgal/",16s,-,-,-,-,-,98.61,83.96
+"Thermoelectric Power (Closed-loop cooling) consumptive use, fresh, in Mgal/d",16s,-,-,-,-,-,162.66,147
+"Thermoelectric Power (Closed-loop cooling) consumptive use, saline, in Mgal/d",16s,-,-,-,-,-,0,0
+"Thermoelectric Power (Closed-loop cooling) total consumptive use, in Mgal/d",16s,-,-,-,-,-,162.66,147
+"Thermoelectric Power (Closed-loop cooling) power generated, in gigawatt-hours",16s,-,-,-,-,92138.35,104838.45,102099.42
+"Thermoelectric Power (Closed-loop cooling) reclaimed wastewater, in Mgal/d",16s,-,-,-,-,-,67.65,67.72
+Thermoelectric Power (Closed-loop cooling) number of facilities,16s,-,-,-,15,24,25,25
+"Mining self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,66.7,127.01,119.19,107.56,87.66,86.61,68.34
+"Mining self-supplied groundwater withdrawals, saline, in Mgal/d",16s,0.01,0.55,11.87,0,0,0,0
+"Mining total self-supplied withdrawals, groundwater, in Mgal/d",16s,66.71,127.56,131.06,107.56,87.66,86.61,68.34
+"Mining self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,13.4,29.11,24.94,0,0,0,0
+"Mining self-supplied surface-water withdrawals, saline, in Mgal/d",16s,0,0.18,2.3,0,0,0,0
+"Mining total self-supplied withdrawals, surface water, in Mgal/d",16s,13.4,29.29,27.24,0,0,0,0
+"Mining total self-supplied withdrawals, fresh, in Mgal/d",16s,80.1,156.12,144.13,107.56,87.66,86.61,68.34
+"Mining total self-supplied withdrawals, saline, in Mgal/d",16s,0.01,0.73,14.17,0,0,0,0
+"Mining total self-supplied withdrawals, in Mgal/d",16s,80.11,156.85,158.3,107.56,87.66,86.61,68.34
+"Mining consumptive use, fresh, in Mgal/d",16s,59.24,118.53,108.94,-,-,-,-
+"Mining consumptive use, saline, in Mgal/d",16s,0.01,0.73,10.64,-,-,0,-
+"Mining total consumptive use, in Mgal/d",16s,59.25,119.26,119.58,-,-,-,-
+"Mining reclaimed wastewater, in Mgal/d",16s,0,0,0,-,-,0,-
+"Livestock self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,-,-,-,23.6,25.27,26.96,38.87
+"Livestock self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,-,-,-,0,0,0,0
+"Livestock total self-supplied withdrawals, fresh, in Mgal/d",16s,-,-,-,23.6,25.27,26.96,38.87
+"Livestock consumptive use, fresh, in Mgal/d",16s,-,-,-,-,-,-,-
+"Livestock (Stock) self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,24.52,22.74,28.95,-,-,-,-
+"Livestock (Stock) self-supplied groundwater withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Livestock (Stock) total self-supplied withdrawals, groundwater, in Mgal/d",16s,24.52,22.74,28.95,-,-,-,-
+"Livestock (Stock) self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,36.07,6.57,2.3,-,-,-,-
+"Livestock (Stock) self-supplied surface-water withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Livestock (Stock) total self-supplied withdrawals, surface water, in Mgal/d",16s,36.07,6.57,2.3,-,-,-,-
+"Livestock (Stock) total self-supplied withdrawals, fresh, in Mgal/d",16s,60.59,29.31,31.25,-,-,-,-
+"Livestock (Stock) total self-supplied withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Livestock (Stock) total self-supplied withdrawals, in Mgal/d",16s,60.59,29.31,31.25,-,-,-,-
+"Livestock (Stock) consumptive use, fresh, in Mgal/d",16s,9.75,21.97,31.25,-,-,-,-
+"Livestock (Stock) consumptive use, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Livestock (Stock) total consumptive use, in Mgal/d",16s,9.75,21.97,31.25,-,-,-,-
+"Livestock (Animal Specialties) self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,-,2.83,39.3,-,-,-,-
+"Livestock (Animal Specialties) self-supplied groundwater withdrawals, saline, in Mgal/d",16s,-,0,0,-,-,-,-
+"Livestock (Animal Specialties) total self-supplied withdrawals, groundwater, in Mgal/d",16s,-,2.83,39.3,-,-,-,-
+"Livestock (Animal Specialties) self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,-,57.34,7.76,-,-,-,-
+"Livestock (Animal Specialties) self-supplied surface-water withdrawals, saline, in Mgal/d",16s,-,0,0,-,-,-,-
+"Livestock (Animal Specialties) total self-supplied withdrawals, surface water, in Mgal/d",16s,-,57.34,7.76,-,-,-,-
+"Livestock (Animal Specialties) total self-supplied withdrawals, fresh, in Mgal/d",16s,-,60.17,47.06,-,-,-,-
+"Livestock (Animal Specialties) total self-supplied withdrawals, saline, in Mgal/d",16s,-,0,0,-,-,-,-
+"Livestock (Animal Specialties) total self-supplied withdrawals, in Mgal/d",16s,-,60.17,47.06,-,-,-,-
+"Livestock (Animal Specialties) consumptive use, fresh, in Mgal/d",16s,-,0.15,0.51,-,-,-,-
+"Livestock (Animal Specialties) consumptive use, saline, in Mgal/d",16s,-,0,0,-,-,-,-
+"Livestock (Animal Specialties) total consumptive use, in Mgal/d",16s,-,0.15,0.51,-,-,-,-
+"Aquaculture self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,-,-,-,38.87,37.07,39.51,23.81
+"Aquaculture self-supplied groundwater withdrawals, saline, in Mgal/d",16s,-,-,-,0,0,0,0
+"Aquaculture total self-supplied withdrawals, groundwater, in Mgal/d",16s,-,-,-,38.87,37.07,39.51,23.81
+"Aquaculture self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,-,-,-,7.68,7.68,7.77,10.71
+"Aquaculture self-supplied surface-water withdrawals, saline, in Mgal/d",16s,-,-,-,0,0,0,0
+"Aquaculture total self-supplied withdrawals, surface water, in Mgal/d",16s,-,-,-,7.68,7.68,7.77,10.71
+"Aquaculture total self-supplied withdrawals, fresh, in Mgal/d",16s,-,-,-,46.55,44.75,47.28,34.52
+"Aquaculture total self-supplied withdrawals, saline, in Mgal/d",16s,-,-,-,0,0,0,0
+"Aquaculture total self-supplied withdrawals, in Mgal/d",16s,-,-,-,46.55,44.75,47.28,34.52
+"Aquaculture consumptive use, fresh, in Mgal/d",16s,-,-,-,-,-,-,-
+"Aquaculture consumptive use, saline, in Mgal/d",16s,-,-,-,-,-,-,-
+"Aquaculture total consumptive use, in Mgal/d",16s,-,-,-,-,-,-,-
+"Irrigation, Total self-supplied groundwater withdrawals, fresh, in Mgal/d",16s,2495.76,2055.7,2083.35,2377.81,2330.78,1693.89,1971.24
+"Irrigation, Total self-supplied groundwater withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Irrigation, Total total self-supplied withdrawals, groundwater, in Mgal/d",16s,2495.76,2055.7,2083.35,-,-,1693.89,1971.24
+"Irrigation, Total self-supplied surface-water withdrawals, fresh, in Mgal/d",16s,3020.17,3245.76,3123.16,2746.67,2578.99,2875.48,2557.64
+"Wastewater Treatment reclaimed wastewater released by public wastewater facilities, in Mgal/d",16s,-,-,-,-,-,117.22,-
+"Irrigation, Total self-supplied surface-water withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Irrigation, Total total self-supplied withdrawals, surface water, in Mgal/d",16s,3020.17,3245.76,3123.16,-,-,2875.48,2557.64
+"Irrigation, Total total self-supplied withdrawals, fresh, in Mgal/d",16s,5515.93,5301.46,5206.51,5124.48,4909.77,4569.37,4528.88
+"Irrigation, Total total self-supplied withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Irrigation, Total total self-supplied withdrawals, in Mgal/d",16s,5515.93,5301.46,5206.51,-,-,4569.37,4528.88
+"Irrigation, Total consumptive use, fresh, in Mgal/d",16s,3166.84,3556.87,3395.22,-,-,3168.79,3660.32
+"Irrigation, Total consumptive use, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+"Irrigation, Total total consumptive use, in Mgal/d",16s,3166.84,3556.87,3395.22,-,-,3168.79,3660.32
+"Irrigation, Total conveyance loss, in Mgal/d",16s,1179.95,1006.73,963.2,-,-,238.92,-
+"Irrigation, Total sprinkler irrigation, in thousand acres",16s,203.78,215.26,187.88,212.62,242.31,195.05,251.54
+"Irrigation, Total microirrigation, in thousand acres",16s,0,0,13.4,14,21.02,28.07,57.44
+"Irrigation, Total surface irrigation, in thousand acres",16s,819.23,826.94,811.91,778.82,715.61,770.04,730.24
+"Irrigation, Total total irrigation, in thousand acres",16s,1023.01,1042.2,1013.19,1005.44,978.94,993.16,1039.22
+"Irrigation, Total reclaimed wastewater, in Mgal/d",16s,28.66,180.59,115.12,-,120.34,128.83,105.76
+"Irrigation, Crop self-supplied groundwater withdrawals for crops, fresh, in Mgal/d",16s,-,-,-,-,-,1617.41,1889.99
+"Irrigation, Crop self-supplied surface-water withdrawals for crops, fresh, in Mgal/d",16s,-,-,-,-,-,2835.8,2516.78
+"Irrigation, Crop total self-supplied withdrawals for crops, fresh, in Mgal/d",16s,-,-,-,-,-,4453.21,4406.77
+"Irrigation, Crop consumptive use for crops, fresh, in Mgal/d",16s,-,-,-,-,-,3040.56,3525.34
+"Irrigation, Crop conveyance loss for crops, in Mgal/d",16s,-,-,-,-,-,206.87,-
+"Irrigation, Crop sprinkler irrigation for crops, in thousand acres",16s,-,-,-,-,-,165.37,220.94
+"Irrigation, Crop microirrigation for crops, in thousand acres",16s,-,-,-,-,-,28.07,57.44
+"Irrigation, Crop surface irrigation for crops, in thousand acres",16s,-,-,-,-,-,770.04,730.24
+"Irrigation, Crop total irrigation for crops, in thousand acres",16s,-,-,-,-,-,963.48,1008.62
+"Irrigation, Crop reclaimed wastewater for crops, in Mgal/d",16s,-,-,-,-,-,84.65,58.77
+"Irrigation, Golf Courses self-supplied groundwater withdrawals for golf courses, fresh, in Mgal/d",16s,-,-,-,-,-,76.48,81.25
+"Irrigation, Golf Courses self-supplied surface-water withdrawals for golf courses, fresh, in Mgal/d",16s,-,-,-,-,-,39.68,40.86
+"Irrigation, Golf Courses total self-supplied withdrawals for golf courses, fresh, in Mgal/d",16s,-,-,-,-,-,116.16,122.11
+"Irrigation, Golf Courses consumptive use for golf courses, fresh, in Mgal/d",16s,-,-,-,-,-,128.23,134.98
+"Irrigation, Golf Courses conveyance loss for golf courses, in Mgal/d",16s,-,-,-,-,-,32.05,-
+"Irrigation, Golf Courses sprinkler irrigation for golf courses, in thousand acres",16s,-,-,-,-,-,29.68,30.6
+"Irrigation, Golf Courses microirrigation for golf courses, in thousand acres",16s,-,-,-,-,-,0,0
+"Irrigation, Golf Courses surface irrigation for golf courses, in thousand acres",16s,-,-,-,-,-,0,0
+"Irrigation, Golf Courses total irrigation for golf courses, in thousand acres",16s,-,-,-,-,-,29.68,30.6
+"Irrigation, Golf Courses reclaimed wastewater for golf courses, in Mgal/d",16s,-,-,-,-,-,44.18,46.99
+"Hydroelectric Power instream water use, in Mgal/d",16s,36277.18,31800.88,21137.95,-,-,20712.06,-
+"Hydroelectric Power offstream surface-water withdrawals, fresh, in Mgal/d",16s,0,0,27.68,-,-,0,-
+"Hydroelectric Power surface water self-supplied offstream withdrawals, saline, in Mgal/d",16s,0,0,0,-,-,-,-
+Hydroelectric Power total offstream surface-water withdrawals in Mgal/d,16s,0,0,27.68,-,-,-,-
+"Hydroelectric Power power generated by instream use, in gigawatt-hours",16s,13944.41,8179.62,7926.27,-,-,6710.34,-
+"Hydroelectric Power power generated by offstream use, in gigawatt-hours",16s,0,0,33.59,-,-,0,-
+"Hydroelectric Power total power generated, in gigawatt-hours",16s,13944.41,8179.62,7959.86,-,-,6710.34,-
+Hydroelectric Power number of instream facilities,16s,5,17,9,-,-,10,-
+Hydroelectric Power number of offstream facilities,16s,0,0,2,-,-,0,-
+Hydroelectric Power total number of facilities,16s,5,17,11,-,-,10,-
+"Wastewater Treatment returns by public wastewater facilities, in Mgal/d",16s,124.82,545.52,358.6,-,-,-,-
+Wastewater Treatment number of public wastewater facilities,16s,197,119,150,-,-,-,-
+"Wastewater Treatment reclaimed wastewater released by wastewater facilities, in Mgal/d",16s,-,-,-,-,-,117.22,-
